@@ -160,7 +160,22 @@ void testing::eim_ridge_wg()
 
 	wguide.set_params(polarisation, W, E, T, D, ncore, nsub, nrib, nclad, WL);
 
-	wguide.reduce_wg(true);
+	wguide.reduce_wg();
 
 	wguide.get_index(true);
+}
+
+void testing::copy_constructor_test()
+{
+	// What's the best way to implement a copy constructor?
+	// Can you use the this operator to assign all the values?
+	// Or do you have to assign each element individually
+
+	wg_dims Dims;
+
+	Dims.set_ridge(1.5, 0.5, 0.3, 0.45); 
+
+	wg_dims alt_dims(Dims); 
+
+	std::cout << "\n";
 }

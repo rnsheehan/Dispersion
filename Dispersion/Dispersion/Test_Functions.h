@@ -20,6 +20,7 @@ namespace testing {
 
 	void eim_ridge_wg(); 
 
+	void copy_constructor_test(); 
 }
 
 #endif

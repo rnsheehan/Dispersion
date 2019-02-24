@@ -16,7 +16,9 @@ int main(int argc, char *argv[])
 
 	//testing::eim_wire_wg(); 
 
-	//testing::eim_rib_wg(); 
+	//testing::eim_rib_wg();
+
+	testing::copy_constructor_test(); 
 
 	std::cout<<"Press enter to close console\n";
 	std::cin.get(); 
