@@ -276,6 +276,7 @@ void EIM::get_index(bool loud)
 void EIM::set_params(bool, wg_dims &, ri_vals &)
 {
 	// Non-pure virtual function for the set_params function
+	// Does nothing
 }
 
 // Rectangular Derived Class Definition
