@@ -210,7 +210,7 @@ void ri_vals::set_ridge(double Ncore, double Nsub, double Nrib, double Nclad, do
 		bool c10 = c1 && c2 && c3 && c4 && c5; 
 
 		if (c10) {
-			ncore = Ncore; nsub = Nsub; nrib = Nrib; nclad = Nclad; lambda = WL; 
+			ncore = Ncore; nsub = Nsub; nrib = Nrib; nclad = Nclad; 
 			params_defined = true;
 		}
 		else {
@@ -288,7 +288,7 @@ void EIM::get_index(bool loud)
 	}
 }
 
-void EIM::set_params(bool polarisation, wg_dims &, ri_vals &)
+void EIM::set_params(bool polarisation, bool, wg_dims &, ri_vals &)
 {
 	// Non-pure virtual function for the set_params function
 	// Does nothing
@@ -892,7 +892,8 @@ void Shallow_Ridge::set_params(bool polarisation, wg_dims &dim_obj, ri_vals &ri_
 
 		if (c10) {
 			pol = polarisation;
-			not_pol = !pol;			
+			not_pol = !pol;
+			
 
 			dimensions.set_dims(dim_obj);
 

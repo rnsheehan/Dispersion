@@ -15,7 +15,6 @@
 // You should be able to reduce the number of set_params methods for the derived classes to a single method defined in EIM base class
 // Although it may be better to have them defined explicitly for the derived classes so that each calculation in reduce_wg is correctly
 // defined. Otherwise you need to have special cases for each of the different waveguides, and that defeats the purpose of using dynamic binding
-// Sticking with the multiple set_params methods!s
 
 class wg_dims {
 public:
@@ -92,7 +91,7 @@ public:
 	virtual void reduce_wg() = 0; // each derived class will reduce 2D - 1D slightly differently
 	virtual void set_params() = 0; 
 
-	virtual void set_params(bool polarisation, wg_dims &, ri_vals &);
+	virtual void set_params(bool polarisation, bool, wg_dims &, ri_vals &);
 
 	void get_index(bool loud); // compute the effective index of the 2D structure
 
