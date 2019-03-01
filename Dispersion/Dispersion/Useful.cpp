@@ -83,3 +83,86 @@ bool useful_funcs::valid_filename_length(const std::string &name)
 
 	return static_cast<int>(name.length()) < MAX_PATH_LENGTH ? true : false;
 }
+
+// Definition of the parameter sweep space class
+// R. Sheehan 1 - 3 - 2019
+
+sweep::sweep()
+{
+	// Default Constructor
+	params_defined = false; 
+
+	Nsteps = 0; 
+
+	start = stop = delta = 0.0; 
+}
+
+sweep::sweep(int &n_pts, double &start_val, double &stop_val)
+{
+	// Primary Constructor
+
+	set_vals(n_pts, start_val, stop_val); 
+}
+
+sweep::sweep(sweep &swp_obj)
+{
+	// Copy constructor
+	set_vals(swp_obj); 
+}
+
+// setter
+void sweep::set_vals(int &n_pts, double &start_val, double &stop_val)
+{
+	// Define parameters for the sweep object
+	// R. Sheehan 1 - 3 - 2019
+
+	// On the differences between the different cast methods in C++
+	// https://stackoverflow.com/questions/332030/when-should-static-cast-dynamic-cast-const-cast-and-reinterpret-cast-be-used
+	// Main message: Use static_cast for ordinary type conversions
+
+	try {
+		bool c1 = n_pts > 3 ? true : false; 
+		bool c2 = fabs(stop_val - start_val) > 0 ? true : false;
+		bool c10 = c1 && c2; 
+
+		if (c10) {
+			Nsteps = n_pts; 
+			start = std::min(stop_val, start_val); 
+			stop = std::max(stop_val, start_val); 
+			delta = (stop - start) / (static_cast<double>(Nsteps - 1)); 
+			params_defined  = true; 
+		}
+		else {
+			std::string reason;
+			reason = "Error: void sweep::set_vals(int &n_pts, double &start_val, double &stop_val)\n";
+			if (!c1) reason += "n_pts: " + template_funcs::toString(n_pts) + " is not correct\n";
+			if (!c2) reason += "fabs(stop_val - start_val): " + template_funcs::toString(fabs(stop_val - start_val), 2) + " is not correct\n";
+
+			throw std::invalid_argument(reason);
+		}
+	}
+	catch (std::invalid_argument &e) {
+		useful_funcs::exit_failure_output(e.what());
+		exit(EXIT_FAILURE);
+	}
+}
+
+void sweep::set_vals(sweep &swp_obj)
+{
+	try {
+		if (swp_obj.defined()) {
+			*this = swp_obj; 
+		}
+		else {
+			std::string reason;
+			reason = "Error: void sweep::void set_vals(sweep &swp_obj)\n";
+			reason += "Parameters not defined for input object\n"; 
+
+			throw std::invalid_argument(reason);
+		}
+	}
+	catch (std::invalid_argument &e) {
+		useful_funcs::exit_failure_output(e.what());
+		exit(EXIT_FAILURE);
+	}
+}

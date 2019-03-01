@@ -236,6 +236,53 @@ void testing::eim_arb_wg()
 	compute->get_index(true); 
 }
 
+void testing::eim_calc_with_materials(double WL)
+{
+	// Test the EIM calculation with the material object
+	// R. Sheehan 1 - 3 - 2019
+
+	bool polarisation = TM;
+
+	double W, E, T, ncore, nsub, nclad, asfrac;
+
+	W = 1.5; E = 0.3; T = 0.45; // neff = 3.265 for TM -> TE, neff = 3.269 for TE calc online
+	ncore = 3.38; nsub = 3.17; nclad = 1.0; // neff = 3.281 for TE -> TM, neff = 3.257 for TM calc online
+
+	Air cladding;
+	InP substrate; 
+	InGaAsP core; 
+
+	cladding.set_wavelength(WL); substrate.set_wavelength(WL); core.set_wavelength(WL); 
+
+	asfrac = 0.6; 
+	ncore = core.refractive_index(asfrac); 
+	nsub = substrate.refractive_index(); 
+	nclad = cladding.refractive_index(); 
+
+	std::cout << "Refractive Index Values\n";
+	std::cout << "ncore: " << ncore << "\n"; 
+	std::cout << "nsub: " << nsub << "\n";
+	std::cout << "nclad: " << nclad << "\n\n";
+
+	wg_dims dim;
+
+	dim.set_rib(W, E, T);
+
+	ri_vals ri;
+
+	ri.set_rib_wire(ncore, nsub, nclad, WL);
+
+	Rib wguide;
+
+	EIM *compute = &wguide;
+
+	compute->set_params(polarisation, dim, ri);
+
+	compute->reduce_wg();
+
+	compute->get_index(true);
+}
+
 void testing::copy_constructor_test()
 {
 	// What's the best way to implement a copy constructor?

@@ -13,4 +13,36 @@ namespace useful_funcs{
 	bool valid_filename_length(const std::string &name);
 }
 
+// This class will describe the bounds of a parameter sweep space
+// e.g. sweep from start-value to stop-value in steps of delta; 
+// R. Sheehan 1 - 3 - 2019
+
+class sweep {
+public:
+	sweep(); 
+	sweep(int &n_pts, double &start_val, double &stop_val);
+	sweep(sweep &swp_obj); 
+
+	// setter
+	void set_vals(int &n_pts, double &start_val, double &stop_val);
+	void set_vals(sweep &swp_obj); 
+
+	// getters
+	inline int get_Nsteps() { return Nsteps;  }
+
+	inline bool defined() { return params_defined;  }
+
+	inline double get_start() { return start; }
+	inline double get_stop() { return stop; }
+	inline double get_delta() { return delta; }
+private:
+	int Nsteps; 
+
+	bool params_defined; 
+
+	double stop; 
+	double start; 
+	double delta; 
+};
+
 #endif

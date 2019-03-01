@@ -10,35 +10,47 @@
 // That way you can make EIM object part of the dispersion class as a pointer to an object derived from EIM
 // It will make the coding much easier and obviate the need to have derived classes for the dispersion class
 // R. Sheehan 22 - 2 - 2019
+// Done R. Sheehan 28 - 2 - 2019
 
 class dispersion {
 public:
 	dispersion(); 
 
-	dispersion(double wl_start, double wl_finish, double wl_step, material *Ncore, material *Nsub, material *Nclad);
+	dispersion(sweep &swp_obj, material *Ncore, material *Nsub, material *Nclad);
 
 	~dispersion(); 
 
-	void set_params(double wl_start, double wl_finish, double wl_step, material *Ncore, material *Nsub, material *Nclad);
-
-	void compute_dispersion_data();
+	void set_params(sweep &swp_obj, material *Ncore, material *Nsub, material *Nclad);
 
 protected:
 	bool params_defined; 
 
-	int wl_N; // number of wl steps required for calculation
-
-	double wl_low; // lower bound on wavelength range, units of um
-	double wl_high; // upper bound on wavelength range, units of um 
-	double wl_delta; // wavelength step-size, units of um
+	// the sweep object defines the wavelength sweep space, all wavelength values are in units of um
+	sweep wavelength; 
 
 	material *core; // object for the core material
 	material *substrate; // object for the substrate material
 	material *cladding; // object for the cladding material
 
+	EIM *neff_calc; // object for computing the waveguide effective index 
+
 	std::vector<double> wl_vals; 
 	std::vector<double> neff_vals; 
 	std::vector<double> ng_vals; 
+};
+
+class wire_dispersion : protected dispersion {
+public:
+	wire_dispersion(); 
+
+	void compute_dispersion_data(sweep &swp_obj, wg_dims &dim_obj, material *Ncore, material *Nsub, material *Nclad);
+};
+
+class rib_dispersion : protected dispersion {
+public:
+	rib_dispersion();
+
+	void compute_dispersion_data(sweep &swp_obj, wg_dims &dim_obj, material *Ncore, material *Nsub, material *Nclad);
 };
 
 #endif

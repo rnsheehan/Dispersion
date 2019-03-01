@@ -22,6 +22,8 @@ namespace testing {
 
 	void eim_arb_wg(); 
 
+	void eim_calc_with_materials(double WL);
+
 	void copy_constructor_test(); 
 }
 
