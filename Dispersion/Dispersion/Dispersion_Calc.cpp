@@ -21,7 +21,7 @@ dispersion::~dispersion()
 
 	params_defined = false; 
 
-	wl_vals.clear(); neff_vals.clear();	ng_vals.clear();
+	neff_vals.clear();	ng_vals.clear();
 }
 
 void dispersion::set_params(sweep &swp_obj, material *Ncore, material *Nsub, material *Nclad)
@@ -43,7 +43,6 @@ void dispersion::set_params(sweep &swp_obj, material *Ncore, material *Nsub, mat
 			substrate = Nsub; 
 			cladding = Nclad; 
 
-			wl_vals.clear(); 
 			neff_vals.clear(); 
 			ng_vals.clear(); 
 
@@ -72,17 +71,48 @@ wire_dispersion::wire_dispersion()
 	// Default constructor
 }
 
-void wire_dispersion::compute_dispersion_data(sweep &swp_obj, wg_dims &dim_obj, material *Ncore, material *Nsub, material *Nclad)
+void wire_dispersion::compute_dispersion_data(bool polarisation, sweep &swp_obj, wg_dims &dim_obj, material *Ncore, material *Nsub, material *Nclad)
 {
 	// Compute the dispersion data based on the defined inputs
 
 	try {
 		if (dim_obj.params_set()) {
 			// Compute dispersion curves here
+
+			neff_vals.clear();	ng_vals.clear(); 
 			
 			set_params(swp_obj, Ncore, Nsub, Nclad);
 
+			double lambda; // variable for storing wavelength value
 
+			Wire w_obj; // Declarate Wire waveguide object
+
+			neff_calc = &w_obj; // Point the EIM object to the Wire waveguide object
+
+			ri_vals ri_obj; // Declarate Refractive Index object
+
+			for (int i = 0; i < wavelength.get_Nsteps(); i++) {
+				lambda = wavelength.get_val(i); // Assign the current value of the wavelength
+
+				core->set_wavelength(lambda); // tell the refractive index objects what the wavelength is
+
+				substrate->set_wavelength(lambda); 
+				
+				cladding->set_wavelength(lambda); 
+				
+				// Assign the RI values to the RI object
+				ri_obj.set_rib_wire(core->refractive_index(), substrate->refractive_index(), cladding->refractive_index(), lambda); 
+
+				// Assign the calculation parameters to the EIM object
+				neff_calc->set_params(polarisation, dim_obj, ri_obj);
+
+				// perform the EIM calculation
+				neff_calc->reduce_wg(); 
+
+				neff_calc->get_index(false); 
+
+				neff_vals.push_back(neff_calc->neff_value()); 
+			}			
 		}
 		else {
 			std::string reason;
@@ -103,7 +133,7 @@ rib_dispersion::rib_dispersion()
 	
 }
 
-void rib_dispersion::compute_dispersion_data(sweep &swp_obj, wg_dims &dim_obj, material *Ncore, material *Nsub, material *Nclad)
+void rib_dispersion::compute_dispersion_data(bool polarisation, sweep &swp_obj, wg_dims &dim_obj, material *Ncore, material *Nsub, material *Nclad)
 {
 	// Compute the dispersion data based on the defined inputs
 

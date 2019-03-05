@@ -96,6 +96,8 @@ public:
 
 	void get_index(bool loud); // compute the effective index of the 2D structure
 
+	double neff_value(); // return the effective index of the fundamental mode
+
 	// setters
 	/*inline void set_W(double &val) { width = val;  }
 	inline void set_H(double &val) { height = val; }
@@ -193,7 +195,7 @@ public:
 	Shallow_Ridge(bool polarisation, wg_dims &dim_obj, ri_vals &ri_obj);
 
 	void set_params();
-	void set_params(bool polarisation, double W, double E, double T, double D, double Ncore, double Nsub, double Nrib, double Nclad, double WL);
+	//void set_params(bool polarisation, double W, double E, double T, double D, double Ncore, double Nsub, double Nrib, double Nclad, double WL);
 	void set_params(bool polarisation, wg_dims &dim_obj, ri_vals &ri_obj);
 
 	void reduce_wg();

@@ -110,6 +110,13 @@ sweep::sweep(sweep &swp_obj)
 	set_vals(swp_obj); 
 }
 
+sweep::~sweep()
+{
+	// Deconstructor
+
+	values.clear(); 
+}
+
 // setter
 void sweep::set_vals(int &n_pts, double &start_val, double &stop_val)
 {
@@ -126,10 +133,21 @@ void sweep::set_vals(int &n_pts, double &start_val, double &stop_val)
 		bool c10 = c1 && c2; 
 
 		if (c10) {
+			// Assign values to the parameters
 			Nsteps = n_pts; 
 			start = std::min(stop_val, start_val); 
 			stop = std::max(stop_val, start_val); 
 			delta = (stop - start) / (static_cast<double>(Nsteps - 1)); 
+
+			// Fill the vector with the desired values
+			values.clear(); 
+
+			double pos = start; 
+			for (int i = 0; i < Nsteps; i++) {
+				values.push_back(pos);
+				pos += delta; 
+			}
+
 			params_defined  = true; 
 		}
 		else {
@@ -149,6 +167,8 @@ void sweep::set_vals(int &n_pts, double &start_val, double &stop_val)
 
 void sweep::set_vals(sweep &swp_obj)
 {
+	// Assign the values from one swp_obj to another
+
 	try {
 		if (swp_obj.defined()) {
 			*this = swp_obj; 
@@ -159,6 +179,35 @@ void sweep::set_vals(sweep &swp_obj)
 			reason += "Parameters not defined for input object\n"; 
 
 			throw std::invalid_argument(reason);
+		}
+	}
+	catch (std::invalid_argument &e) {
+		useful_funcs::exit_failure_output(e.what());
+		exit(EXIT_FAILURE);
+	}
+}
+
+double sweep::get_val(int i)
+{
+	// Access the computed sweep parameters stored in the array
+
+	try {
+		bool c1 = i > -1 ? true : false; 
+		bool c2 = i < Nsteps ? true : false; 
+		bool c3 = static_cast<int>(values.size()) == Nsteps ? true : false; 
+		bool c4 = static_cast<int>(values.size()) > 3 ? true : false; 
+		bool c10 = c1 && c2 && c3 && c4;
+
+		if (c10) {
+			return values[i]; 
+		}
+		else {
+			return 0.0; 
+			std::string reason; 
+			reason = "Error: double sweep::get_val(int i)\n"; 
+			if (!c1 || !c2) reason += "Out of bounds array access attempt\n"; 
+			if (!c3 || !c4) reason += "values not correctly defined\n"; 
+			throw std::invalid_argument(reason); 
 		}
 	}
 	catch (std::invalid_argument &e) {

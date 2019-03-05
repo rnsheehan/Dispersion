@@ -22,6 +22,7 @@ public:
 	sweep(); 
 	sweep(int &n_pts, double &start_val, double &stop_val);
 	sweep(sweep &swp_obj); 
+	~sweep(); 
 
 	// setter
 	void set_vals(int &n_pts, double &start_val, double &stop_val);
@@ -35,6 +36,9 @@ public:
 	inline double get_start() { return start; }
 	inline double get_stop() { return stop; }
 	inline double get_delta() { return delta; }
+
+	double get_val(int i); // access the ith computed sweep parameter
+
 private:
 	int Nsteps; 
 
@@ -43,6 +47,8 @@ private:
 	double stop; 
 	double start; 
 	double delta; 
+
+	std::vector<double> values; 
 };
 
 #endif

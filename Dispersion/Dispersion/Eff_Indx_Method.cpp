@@ -294,6 +294,28 @@ void EIM::set_params(bool polarisation, wg_dims &, ri_vals &)
 	// Does nothing
 }
 
+double EIM::neff_value()
+{
+	// return the computed effective index value
+
+	try {
+		if(TLS.get_nmodes(not_pol) > 0){
+			return TLS.get_neff(0, not_pol);
+		}
+		else {
+			return 0.0; 
+			std::string reason; 
+			reason = "Error: double EIM::neff_value()\n"; 
+			reason += "No modes computed during calculation\n"; 
+			throw std::invalid_argument(reason); 
+		}		
+	}
+	catch (std::invalid_argument &e) {
+		useful_funcs::exit_failure_output(e.what());
+		exit(EXIT_FAILURE);
+	}
+}
+
 // Rectangular Derived Class Definition
 Rectangular::Rectangular()
 {
@@ -817,59 +839,59 @@ void Shallow_Ridge::set_params()
 
 }
 
-void Shallow_Ridge::set_params(bool polarisation, double W, double E, double T, double D, double Ncore, double Nsub, double Nrib, double Nclad, double WL)
-{
-	// Assign values to the parameters of the shallow ridge waveguide class
-	// R. Sheehan 20 - 2 - 2019
-
-	try {
-		bool c1 = W > 0.0 ? true : false;
-		bool c2 = E > 0.0 ? true : false;
-		bool c3 = T > 0.0 ? true : false;
-		bool c4 = D > 0.0 ? true : false;
-		bool c5 = Ncore > Nrib ? true : false;
-		bool c6 = Nsub > Nclad ? true : false;
-		bool c7 = Nrib > Nclad ? true : false;
-		bool c8 = Nclad > 0.0 ? true : false;
-		bool c9 = WL > 0.0 ? true : false;
-		bool c10 = c1 && c2 && c3 && c4 && c5 && c6 && c7 && c8 && c9;
-
-		if (c10) {
-			pol = polarisation;
-			not_pol = !pol;
-			width = W; etch_depth = E; slab_height = T; core_height = D; 
-			ncore = Ncore; nsub = Nsub; nrib = Nrib; nclad = Nclad;
-			lambda = WL;
-
-			dimensions.set_ridge(W, E, T, D); 
-
-			ref_indx.set_ridge(Ncore, Nsub, Nrib, Nclad, WL); 
-
-			eta_one.clear();
-			eta_two.clear();
-			params_defined = true;
-		}
-		else {
-			std::string reason;
-			reason = "Error: void Shallow_Ridge::set_params(bool polarisation, double W, double E, double T, double D, double Ncore, double Nsub, double Nrib, double Nclad, double WL)\n";
-			if (!c1) reason += "W: " + template_funcs::toString(W, 2) + " is not correct\n";
-			if (!c2) reason += "E: " + template_funcs::toString(E, 2) + " is not correct\n";
-			if (!c3) reason += "T: " + template_funcs::toString(T, 2) + " is not correct\n";
-			if (!c4) reason += "D: " + template_funcs::toString(D, 2) + " is not correct\n";
-			if (!c5) reason += "Ncore: " + template_funcs::toString(Ncore, 2) + " is not correct\n";
-			if (!c6) reason += "Nsub: " + template_funcs::toString(Nsub, 2) + " is not correct\n";
-			if (!c7) reason += "Nrib: " + template_funcs::toString(Nrib, 2) + " is not correct\n";
-			if (!c8) reason += "Nclad: " + template_funcs::toString(Nclad, 2) + " is not correct\n";
-			if (!c9) reason += "WL: " + template_funcs::toString(WL, 2) + " is not correct\n";
-
-			throw std::invalid_argument(reason);
-		}
-	}
-	catch (std::invalid_argument &e) {
-		useful_funcs::exit_failure_output(e.what());
-		exit(EXIT_FAILURE);
-	}
-}
+//void Shallow_Ridge::set_params(bool polarisation, double W, double E, double T, double D, double Ncore, double Nsub, double Nrib, double Nclad, double WL)
+//{
+//	// Assign values to the parameters of the shallow ridge waveguide class
+//	// R. Sheehan 20 - 2 - 2019
+//
+//	try {
+//		bool c1 = W > 0.0 ? true : false;
+//		bool c2 = E > 0.0 ? true : false;
+//		bool c3 = T > 0.0 ? true : false;
+//		bool c4 = D > 0.0 ? true : false;
+//		bool c5 = Ncore > Nrib ? true : false;
+//		bool c6 = Nsub > Nclad ? true : false;
+//		bool c7 = Nrib > Nclad ? true : false;
+//		bool c8 = Nclad > 0.0 ? true : false;
+//		bool c9 = WL > 0.0 ? true : false;
+//		bool c10 = c1 && c2 && c3 && c4 && c5 && c6 && c7 && c8 && c9;
+//
+//		if (c10) {
+//			pol = polarisation;
+//			not_pol = !pol;
+//			width = W; etch_depth = E; slab_height = T; core_height = D; 
+//			ncore = Ncore; nsub = Nsub; nrib = Nrib; nclad = Nclad;
+//			lambda = WL;
+//
+//			dimensions.set_ridge(W, E, T, D); 
+//
+//			ref_indx.set_ridge(Ncore, Nsub, Nrib, Nclad, WL); 
+//
+//			eta_one.clear();
+//			eta_two.clear();
+//			params_defined = true;
+//		}
+//		else {
+//			std::string reason;
+//			reason = "Error: void Shallow_Ridge::set_params(bool polarisation, double W, double E, double T, double D, double Ncore, double Nsub, double Nrib, double Nclad, double WL)\n";
+//			if (!c1) reason += "W: " + template_funcs::toString(W, 2) + " is not correct\n";
+//			if (!c2) reason += "E: " + template_funcs::toString(E, 2) + " is not correct\n";
+//			if (!c3) reason += "T: " + template_funcs::toString(T, 2) + " is not correct\n";
+//			if (!c4) reason += "D: " + template_funcs::toString(D, 2) + " is not correct\n";
+//			if (!c5) reason += "Ncore: " + template_funcs::toString(Ncore, 2) + " is not correct\n";
+//			if (!c6) reason += "Nsub: " + template_funcs::toString(Nsub, 2) + " is not correct\n";
+//			if (!c7) reason += "Nrib: " + template_funcs::toString(Nrib, 2) + " is not correct\n";
+//			if (!c8) reason += "Nclad: " + template_funcs::toString(Nclad, 2) + " is not correct\n";
+//			if (!c9) reason += "WL: " + template_funcs::toString(WL, 2) + " is not correct\n";
+//
+//			throw std::invalid_argument(reason);
+//		}
+//	}
+//	catch (std::invalid_argument &e) {
+//		useful_funcs::exit_failure_output(e.what());
+//		exit(EXIT_FAILURE);
+//	}
+//}
 
 void Shallow_Ridge::set_params(bool polarisation, wg_dims &dim_obj, ri_vals &ri_obj)
 {
