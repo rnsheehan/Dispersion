@@ -26,6 +26,8 @@ namespace testing {
 
 	void disp_curve_wire(); 
 
+	void disp_curve_rib();
+
 	void copy_constructor_test(); 
 }
 

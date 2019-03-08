@@ -325,3 +325,31 @@ void testing::disp_curve_wire()
 
 	disp_calc.compute_dispersion_data(pol, WL, wire_dims, &ri_si, &ri_sio2, &ri_air); 
 }
+
+void testing::disp_curve_rib()
+{
+	// Compute the dispersion curve for a rib waveguide object
+	// R. Sheehan 8 - 3 - 2019
+
+	bool pol = TM;
+
+	int n_pts;
+	double start, stop, W, E, T;
+
+	sweep WL;
+	wg_dims rib_dims;
+
+	Air ri_air;
+	Si ri_si;
+	SiO2 ri_sio2;
+
+	n_pts = 5; start = 1.4; stop = 1.6;
+	WL.set_vals(n_pts, start, stop);
+
+	W = 1; E = 0.5; T = 0.3; 
+	rib_dims.set_rib(W, E, T); 
+
+	rib_dispersion disp_calc;
+
+	disp_calc.compute_dispersion_data(pol, WL, rib_dims, &ri_si, &ri_sio2, &ri_air);
+}
