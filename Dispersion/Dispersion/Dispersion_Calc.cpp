@@ -7,7 +7,7 @@ dispersion::dispersion()
 	// Default Constructor
 	params_defined = false;
 
-	core = nullptr; substrate = nullptr; cladding = nullptr; 
+	neff_calc = nullptr; core = nullptr; substrate = nullptr; cladding = nullptr; 
 }
 
 dispersion::dispersion(sweep &swp_obj, material *Ncore, material *Nsub, material *Nclad)
@@ -65,6 +65,71 @@ void dispersion::set_params(sweep &swp_obj, material *Ncore, material *Nsub, mat
 	}
 }
 
+void dispersion::compute_dispersion(bool polarisation, wg_dims &dim_obj)
+{
+	// Compute the dispersion curve data based on the input parameters
+	// R. Sheehan 7 - 3 - 2019
+
+	try {
+		bool c1 = params_defined ? true : false; 
+		bool c2 = wavelength.defined() ? true : false; 
+		bool c3 = dim_obj.defined() ? true : false; 
+		bool c4 = neff_calc != nullptr ? true : false; 
+		bool c10 = c1 && c2 && c3 && c4; 
+
+		if (c10) {
+			// Compute dispersion curves here
+
+			neff_vals.clear();	ng_vals.clear();
+
+			double lambda, ncore, nclad, nsub; // variable for storing wavelength value
+
+			ri_vals ri_obj; // Declarate Refractive Index object
+
+			for (int i = 0; i < wavelength.get_Nsteps(); i++) {
+				lambda = wavelength.get_val(i); // Assign the current value of the wavelength
+
+				core->set_wavelength(lambda); // tell the refractive index objects what the wavelength is
+
+				substrate->set_wavelength(lambda);
+
+				cladding->set_wavelength(lambda);
+
+				// Assign the RI values to the RI object
+				ncore = core->refractive_index(); 
+				nsub = substrate->refractive_index(); 
+				nclad = cladding->refractive_index(); 
+				ri_obj.set_rib_wire(ncore, nsub, nclad, lambda);
+
+				// Assign the calculation parameters to the EIM object
+				neff_calc->set_params(polarisation, dim_obj, ri_obj);
+
+				// perform the EIM calculation
+				neff_calc->reduce_wg();
+
+				neff_calc->get_index(false);
+
+				neff_vals.push_back(neff_calc->neff_value());
+
+				std::cout << lambda << " , " <<	ncore <<" , " << nsub << " , " << nclad << " , " <<	neff_calc->neff_value() << "\n"; 
+			}
+		}
+		else {
+			std::string reason;
+			reason = "Error: void dispersion::compute_dispersion()\n";
+			if(!c1) reason += "Parameters not defined\n"; 
+			if(!c2) reason += "wavelength sweep params not defined\n"; 
+			if(!c3) reason += "waveguide dimensions not defined\n"; 
+			if(!c4) reason += "EIM calculation object not defined\n"; 
+			throw std::invalid_argument(reason);
+		}
+	}
+	catch (std::invalid_argument &e) {
+		useful_funcs::exit_failure_output(e.what());
+		exit(EXIT_FAILURE);
+	}
+}
+
 // Defintion of the wire eaveguide dispersion calculation
 wire_dispersion::wire_dispersion()
 {
@@ -74,49 +139,23 @@ wire_dispersion::wire_dispersion()
 void wire_dispersion::compute_dispersion_data(bool polarisation, sweep &swp_obj, wg_dims &dim_obj, material *Ncore, material *Nsub, material *Nclad)
 {
 	// Compute the dispersion data based on the defined inputs
+	// test to ensure that input dim_obj is associated with a wire waveguide
 
 	try {
-		if (dim_obj.params_set()) {
-			// Compute dispersion curves here
-
-			neff_vals.clear();	ng_vals.clear(); 
+		if (dim_obj.get_wg_code() == WIRE_WG) {	 
 			
-			set_params(swp_obj, Ncore, Nsub, Nclad);
-
-			double lambda; // variable for storing wavelength value
-
 			Wire w_obj; // Declarate Wire waveguide object
 
 			neff_calc = &w_obj; // Point the EIM object to the Wire waveguide object
 
-			ri_vals ri_obj; // Declarate Refractive Index object
+			set_params(swp_obj, Ncore, Nsub, Nclad);				
 
-			for (int i = 0; i < wavelength.get_Nsteps(); i++) {
-				lambda = wavelength.get_val(i); // Assign the current value of the wavelength
-
-				core->set_wavelength(lambda); // tell the refractive index objects what the wavelength is
-
-				substrate->set_wavelength(lambda); 
-				
-				cladding->set_wavelength(lambda); 
-				
-				// Assign the RI values to the RI object
-				ri_obj.set_rib_wire(core->refractive_index(), substrate->refractive_index(), cladding->refractive_index(), lambda); 
-
-				// Assign the calculation parameters to the EIM object
-				neff_calc->set_params(polarisation, dim_obj, ri_obj);
-
-				// perform the EIM calculation
-				neff_calc->reduce_wg(); 
-
-				neff_calc->get_index(false); 
-
-				neff_vals.push_back(neff_calc->neff_value()); 
-			}			
+			compute_dispersion(polarisation, dim_obj); 
 		}
 		else {
 			std::string reason;
 			reason = "Error: void wire_dispersion::compute_dispersion_data()\n";
+			reason += "Input dimension values are not correct\n"; 
 			throw std::invalid_argument(reason);
 		}
 	}
@@ -136,15 +175,23 @@ rib_dispersion::rib_dispersion()
 void rib_dispersion::compute_dispersion_data(bool polarisation, sweep &swp_obj, wg_dims &dim_obj, material *Ncore, material *Nsub, material *Nclad)
 {
 	// Compute the dispersion data based on the defined inputs
+	// test to ensure that input dim_obj is associated with a wire waveguide
 
 	try {
-		if (params_defined) {
+		if (dim_obj.get_wg_code() == RIB_WG) {
 			// Compute dispersion curves here
+			Rib w_obj; // Declarate Rib waveguide object
 
+			neff_calc = &w_obj; // Point the EIM object to the Wire waveguide object
+
+			set_params(swp_obj, Ncore, Nsub, Nclad);
+
+			compute_dispersion(polarisation, dim_obj);
 		}
 		else {
 			std::string reason;
 			reason = "Error: void rib_dispersion::compute_dispersion_data()\n";
+			reason += "Input dimension values are not correct\n";
 			throw std::invalid_argument(reason);
 		}
 	}

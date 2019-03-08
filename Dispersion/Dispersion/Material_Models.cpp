@@ -250,7 +250,7 @@ double Si::refractive_index()
 			std::string reason;
 			reason = "Attempting to compute RI outside of allowed range in Si::refractive_index()\n";
 			reason += "wavelength = " + template_funcs::toString(wavelength, 3) + " (um)\n";
-			reason += "Allowed range for GaAs model is [ 0.197, 2.5 ]\n";
+			reason += "Allowed range for Si model is [ 0.197, 2.5 ]\n";
 			throw std::range_error(reason);
 		}
 	}

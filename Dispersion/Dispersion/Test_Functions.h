@@ -24,6 +24,8 @@ namespace testing {
 
 	void eim_calc_with_materials(double WL);
 
+	void disp_curve_wire(); 
+
 	void copy_constructor_test(); 
 }
 

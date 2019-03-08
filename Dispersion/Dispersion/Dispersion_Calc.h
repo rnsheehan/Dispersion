@@ -11,7 +11,6 @@
 // It will make the coding much easier and obviate the need to have derived classes for the dispersion class
 // R. Sheehan 22 - 2 - 2019
 // Done R. Sheehan 28 - 2 - 2019
-// 
 
 class dispersion {
 public:
@@ -22,6 +21,8 @@ public:
 	~dispersion(); 
 
 	void set_params(sweep &swp_obj, material *Ncore, material *Nsub, material *Nclad);
+
+	void compute_dispersion(bool polarisation, wg_dims &dim_obj);
 
 protected:
 	bool params_defined; 

@@ -22,11 +22,13 @@ int main(int argc, char *argv[])
 
 	//testing::eim_arb_wg(); 
 
-	testing::eim_calc_with_materials(1.3);
+	//testing::eim_calc_with_materials(1.3);
 
-	testing::eim_calc_with_materials(1.55);
+	//testing::eim_calc_with_materials(1.55);
 
 	//testing::copy_constructor_test(); 
+
+	testing::disp_curve_wire(); 
 
 	std::cout<<"Press enter to close console\n";
 	std::cin.get(); 

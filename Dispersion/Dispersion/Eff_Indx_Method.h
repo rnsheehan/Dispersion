@@ -29,7 +29,9 @@ public:
 	void set_ridge(double W, double E, double T, double D);
 
 	// getters
-	inline bool params_set() { return params_defined; }
+	inline bool defined() { return params_defined; }
+
+	inline int get_wg_code() { return wg_type;  }
 
 	inline double get_W() { return width;  }
 	inline double get_H() { return height; }
@@ -39,6 +41,8 @@ public:
 
 private:
 	bool params_defined; 
+
+	int wg_type; // code to identify the waveguide geometry
 
 	// Waveguide Dimensions
 	double width; // W rib / ridge width in units of um
@@ -61,7 +65,7 @@ public:
 	void set_ridge(double Ncore, double Nsub, double Nrib, double Nclad, double WL);
 
 	// getters
-	inline bool params_set() { return params_defined;  }
+	inline bool defined() { return params_defined;  }
 	inline double get_Ncore() { return ncore; }
 	inline double get_Nsub() { return nsub; }
 	inline double get_Nrib() { return nrib; }

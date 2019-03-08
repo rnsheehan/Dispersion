@@ -297,3 +297,31 @@ void testing::copy_constructor_test()
 
 	std::cout << "\n";
 }
+
+void testing::disp_curve_wire()
+{
+	// Compute the dispersion curve for a wire waveguide object
+	// R. Sheehan 7 - 3 - 2019
+
+	bool pol = TM; 
+
+	int n_pts; 
+	double start, stop, W, H; 
+
+	sweep WL; 
+	wg_dims wire_dims; 
+
+	Air ri_air; 
+	Si ri_si; 
+	SiO2 ri_sio2; 
+
+	n_pts = 5; start = 1.4; stop = 1.6; 
+	WL.set_vals(n_pts, start, stop); 
+
+	W = 1; H = 0.5; 
+	wire_dims.set_rect_wire(W, H); 
+
+	wire_dispersion disp_calc; 
+
+	disp_calc.compute_dispersion_data(pol, WL, wire_dims, &ri_si, &ri_sio2, &ri_air); 
+}

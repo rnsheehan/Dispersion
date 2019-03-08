@@ -9,6 +9,7 @@ wg_dims::wg_dims()
 {
 	// Default Constructor
 	params_defined = false; 
+	wg_type = 0; 
 	width = height = etch_depth = slab_height = core_height = 0.0; 
 }
 
@@ -36,6 +37,7 @@ void wg_dims::set_rect_wire(double W, double H)
 
 		if (c10) {
 			width = W; height = H; etch_depth = slab_height = core_height = 0.0;
+			wg_type = WIRE_WG; 
 			params_defined = true; 
 		}
 		else {
@@ -65,6 +67,7 @@ void wg_dims::set_rib(double W, double E, double T)
 
 		if (c10) {
 			width = W; etch_depth = E; slab_height = T; core_height = E + T; height = 0.0; 
+			wg_type = RIB_WG; 
 			params_defined = true;
 		}
 		else {
@@ -96,6 +99,8 @@ void wg_dims::set_ridge(double W, double E, double T, double D)
 
 		if (c10) {
 			width = W; etch_depth = E; slab_height = T; core_height = D; height = slab_height + etch_depth;
+			wg_type = RIDGE_WG; 
+			params_defined = true;
 		}
 		else {
 			std::string reason;
