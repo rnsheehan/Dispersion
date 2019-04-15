@@ -65,7 +65,7 @@ void dispersion::set_params(sweep &swp_obj, material *Ncore, material *Nsub, mat
 	}
 }
 
-void dispersion::compute_dispersion(bool polarisation, wg_dims &dim_obj)
+void dispersion::compute_dispersion(bool polarisation, wg_dims &dim_obj, std::string &filename, bool loud)
 {
 	// Compute the dispersion curve data based on the input parameters
 	// R. Sheehan 7 - 3 - 2019
@@ -109,10 +109,14 @@ void dispersion::compute_dispersion(bool polarisation, wg_dims &dim_obj)
 
 				neff_calc->get_index(false);
 
-				neff_vals.push_back(neff_calc->neff_value());
+				neff_vals.push_back( neff_calc->neff_value() );
 
-				std::cout << lambda << " , " <<	ncore <<" , " << nsub << " , " << nclad << " , " <<	neff_calc->neff_value() << "\n"; 
+				if(loud) std::cout << lambda << " , " <<	ncore <<" , " << nsub << " , " << nclad << " , " <<	neff_calc->neff_value() << "\n"; 
 			}
+
+			compute_group_index(loud); // compute the group index data from the effective index data
+
+			save_data_to_file(filename); // save neff and ngroup data to file
 		}
 		else {
 			std::string reason;
@@ -130,13 +134,123 @@ void dispersion::compute_dispersion(bool polarisation, wg_dims &dim_obj)
 	}
 }
 
+void dispersion::compute_group_index(bool loud)
+{
+	// Compute the group index data from a set of effective index data
+	// R. Sheehan 15 - 4 - 2019
+
+	try {
+		bool c1 = wavelength.defined() ? true : false;
+		bool c2 = static_cast<int>(neff_vals.size()) == wavelength.get_Nsteps() ? true : false; 
+		bool c10 = c1 && c2; 
+
+		if (c10) {
+			ng_vals.clear(); 
+
+			int N = static_cast<int>(neff_vals.size()); 
+			double df, dx, ng_val; 
+			for (int i = 0; i < N; i++) {
+				if (i == 0) {
+					// compute n'(lambda) using forward finite difference
+					df = neff_vals[i + 1] - neff_vals[i]; 
+					dx = wavelength.get_val(i + 1) - wavelength.get_val(i); 
+				}
+				else if (i == N - 1) {
+					// compute n'(lambda) using backward finite difference
+					df = neff_vals[i] - neff_vals[i-1];
+					dx = wavelength.get_val(i) - wavelength.get_val(i-1);
+				}
+				else {
+					// compute n'(lambda) using central finite difference
+					df = neff_vals[i + 1] - neff_vals[i - 1];
+					dx = wavelength.get_val(i + 1) - wavelength.get_val(i-1);
+				}
+				
+				// compute group index from n_{g} = n_{eff} - lambda d n_{eff} / d lambda
+				if (dx > 0) {
+					ng_val = neff_vals[i] - wavelength.get_val(i)*(df / dx); 
+				}
+				else {
+					ng_val = 0.0; 
+				}
+
+				ng_vals.push_back(ng_val); 
+
+				if (loud) std::cout << wavelength.get_val(i)<<" , "<< neff_vals[i] << " , " << ng_val << "\n"; 
+			}
+		}
+		else {
+			std::string reason;
+			reason = "Error: void dispersion::compute_group_index()\n";
+			if (!c1) reason += "wavelength sweep params not defined\n";
+			if (!c2) reason += "neff data not defined\n";
+			throw std::invalid_argument(reason);
+		}
+	}
+	catch (std::invalid_argument &e) {
+		useful_funcs::exit_failure_output(e.what());
+		exit(EXIT_FAILURE);
+	}
+}
+
+void dispersion::save_data_to_file(std::string &filename)
+{
+	// Write the computed dispersion data to a file
+	// R. Sheehan 15 - 4 - 2019
+
+	try {
+		bool c1 = wavelength.defined() ? true : false;
+		bool c2 = static_cast<int>(neff_vals.size()) == wavelength.get_Nsteps() ? true : false;
+		bool c3 = static_cast<int>(ng_vals.size()) == wavelength.get_Nsteps() ? true : false;
+		bool c4 = filename != empty_str ? true : false; 
+		bool c5 = useful_funcs::valid_filename_length(filename); 
+		bool c10 = c1 && c2 && c3 && c4 && c5;
+
+		if (c10) {
+			std::ofstream write(filename, std::ios_base::out, std::ios_base::trunc);
+
+			if (write.is_open()) {
+				for (int i = 0; i < wavelength.get_Nsteps(); i++) {
+					write << std::setprecision(10) << wavelength.get_val(i) << " , " << neff_vals[i] << " , " << ng_vals[i] << "\n"; 
+				}
+
+				write.close(); 
+			}
+			else {
+				std::string reason;
+				reason = "Error: void dispersion::save_data_to_file(std::string &filename)\n";
+				reason += "Could not open file: " + filename + "\n";
+				throw std::runtime_error(reason);
+			}
+		}
+		else {
+			std::string reason;
+			reason = "Error: void dispersion::save_data_to_file()\n";
+			if (!c1) reason += "wavelength sweep params not defined\n";
+			if (!c2) reason += "neff data not defined\n";
+			if (!c3) reason += "ng data not defined\n";
+			if (!c4) reason += "filename not defined\n";
+			if (!c5) reason += "filename: " + filename + " too long\n";
+			throw std::invalid_argument(reason);
+		}
+	}
+	catch (std::invalid_argument &e) {
+		useful_funcs::exit_failure_output(e.what());
+		exit(EXIT_FAILURE);
+	}
+	catch (std::runtime_error &e) {
+		std::cerr << e.what();
+	}
+}
+
 // Defintion of the wire eaveguide dispersion calculation
 wire_dispersion::wire_dispersion()
 {
 	// Default constructor
+	wire_file = empty_str; 
 }
 
-void wire_dispersion::compute_dispersion_data(bool polarisation, sweep &swp_obj, wg_dims &dim_obj, material *Ncore, material *Nsub, material *Nclad)
+void wire_dispersion::compute_dispersion_data(bool polarisation, sweep &swp_obj, wg_dims &dim_obj, material *Ncore, material *Nsub, material *Nclad, bool loud)
 {
 	// Compute the dispersion data based on the defined inputs
 	// test to ensure that input dim_obj is associated with a wire waveguide
@@ -150,7 +264,9 @@ void wire_dispersion::compute_dispersion_data(bool polarisation, sweep &swp_obj,
 
 			set_params(swp_obj, Ncore, Nsub, Nclad);				
 
-			compute_dispersion(polarisation, dim_obj); 
+			wire_file = "Wire_WG_Dispersion_Data.txt"; 
+
+			compute_dispersion(polarisation, dim_obj, wire_file, loud); 
 		}
 		else {
 			std::string reason;
@@ -169,10 +285,11 @@ void wire_dispersion::compute_dispersion_data(bool polarisation, sweep &swp_obj,
 
 rib_dispersion::rib_dispersion()
 {
-	
+	// Default Constructor
+	rib_file = empty_str; 
 }
 
-void rib_dispersion::compute_dispersion_data(bool polarisation, sweep &swp_obj, wg_dims &dim_obj, material *Ncore, material *Nsub, material *Nclad)
+void rib_dispersion::compute_dispersion_data(bool polarisation, sweep &swp_obj, wg_dims &dim_obj, material *Ncore, material *Nsub, material *Nclad, bool loud)
 {
 	// Compute the dispersion data based on the defined inputs
 	// test to ensure that input dim_obj is associated with a wire waveguide
@@ -186,7 +303,9 @@ void rib_dispersion::compute_dispersion_data(bool polarisation, sweep &swp_obj, 
 
 			set_params(swp_obj, Ncore, Nsub, Nclad);
 
-			compute_dispersion(polarisation, dim_obj);
+			rib_file = "Rib_WG_Dispersion_Data.txt";
+
+			compute_dispersion(polarisation, dim_obj, rib_file, loud);
 		}
 		else {
 			std::string reason;

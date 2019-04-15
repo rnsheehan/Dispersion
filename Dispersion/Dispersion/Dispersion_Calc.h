@@ -22,7 +22,12 @@ public:
 
 	void set_params(sweep &swp_obj, material *Ncore, material *Nsub, material *Nclad);
 
-	void compute_dispersion(bool polarisation, wg_dims &dim_obj);
+	void compute_dispersion(bool polarisation, wg_dims &dim_obj, std::string &filename, bool loud = false);
+
+private:
+	void compute_group_index(bool loud = false); 
+
+	void save_data_to_file(std::string &filename);
 
 protected:
 	bool params_defined; 
@@ -44,14 +49,20 @@ class wire_dispersion : protected dispersion {
 public:
 	wire_dispersion(); 
 
-	void compute_dispersion_data(bool polarisation, sweep &swp_obj, wg_dims &dim_obj, material *Ncore, material *Nsub, material *Nclad);
+	void compute_dispersion_data(bool polarisation, sweep &swp_obj, wg_dims &dim_obj, material *Ncore, material *Nsub, material *Nclad, bool loud = false);
+
+private:
+	std::string wire_file; 
 };
 
 class rib_dispersion : protected dispersion {
 public:
 	rib_dispersion();
 
-	void compute_dispersion_data(bool polarisation, sweep &swp_obj, wg_dims &dim_obj, material *Ncore, material *Nsub, material *Nclad);
+	void compute_dispersion_data(bool polarisation, sweep &swp_obj, wg_dims &dim_obj, material *Ncore, material *Nsub, material *Nclad, bool loud = false);
+
+private:
+	std::string rib_file; 
 };
 
 #endif

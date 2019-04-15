@@ -29,6 +29,8 @@ namespace testing {
 	void disp_curve_rib();
 
 	void copy_constructor_test(); 
+
+	void material_RI_curve_test(); 
 }
 
 #endif

@@ -249,13 +249,15 @@ void testing::eim_calc_with_materials(double WL)
 	ncore = 3.38; nsub = 3.17; nclad = 1.0; // neff = 3.281 for TE -> TM, neff = 3.257 for TM calc online
 
 	Air cladding;
-	InP substrate; 
-	InGaAsP core; 
+	//InP substrate; 
+	//InGaAsP core; 
+	SiO2 substrate; 
+	SiN core; 
 
 	cladding.set_wavelength(WL); substrate.set_wavelength(WL); core.set_wavelength(WL); 
 
 	asfrac = 0.6; 
-	ncore = core.refractive_index(asfrac); 
+	ncore = core.refractive_index(); 
 	nsub = substrate.refractive_index(); 
 	nclad = cladding.refractive_index(); 
 
@@ -312,13 +314,13 @@ void testing::disp_curve_wire()
 	wg_dims wire_dims; 
 
 	Air ri_air; 
-	Si ri_si; 
+	SiN ri_si; 
 	SiO2 ri_sio2; 
 
-	n_pts = 5; start = 1.4; stop = 1.6; 
+	n_pts = 50; start = 1.5; stop = 1.6; 
 	WL.set_vals(n_pts, start, stop); 
 
-	W = 1; H = 0.5; 
+	W = 1; H = 0.3; 
 	wire_dims.set_rect_wire(W, H); 
 
 	wire_dispersion disp_calc; 
@@ -343,7 +345,7 @@ void testing::disp_curve_rib()
 	Si ri_si;
 	SiO2 ri_sio2;
 
-	n_pts = 5; start = 1.4; stop = 1.6;
+	n_pts = 50; start = 1.4; stop = 1.6;
 	WL.set_vals(n_pts, start, stop);
 
 	W = 1; E = 0.5; T = 0.3; 
@@ -351,5 +353,35 @@ void testing::disp_curve_rib()
 
 	rib_dispersion disp_calc;
 
-	disp_calc.compute_dispersion_data(pol, WL, rib_dims, &ri_si, &ri_sio2, &ri_air);
+	disp_calc.compute_dispersion_data(pol, WL, rib_dims, &ri_si, &ri_sio2, &ri_air, true);
+}
+
+void testing::material_RI_curve_test()
+{
+	// Compute the material RI curves at multiple WL
+	// R. Sheehan 15 - 4 - 2019
+
+	int n_pts;
+	double start, stop, lambda; 
+
+	sweep WL;
+
+	Air ri_air;
+	Si ri_si;
+	SiO2 ri_sio2;
+	SiN ri_sin; 
+
+	n_pts = 50; start = 1.5; stop = 1.6;
+	WL.set_vals(n_pts, start, stop);
+
+	std::ofstream write("RI_Values.txt", std::ios_base::out, std::ios_base::trunc);
+
+	for (int i = 0; i < WL.get_Nsteps(); i++) {
+		lambda = WL.get_val(i);
+		ri_sin.set_wavelength(lambda);
+		ri_si.set_wavelength(lambda); 
+		ri_sio2.set_wavelength(lambda);
+
+		write << std::setprecision(10) << lambda << " , " << ri_si.refractive_index() << " , " << ri_sio2.refractive_index() << " , " << ri_sin.refractive_index() << "\n";
+	}
 }

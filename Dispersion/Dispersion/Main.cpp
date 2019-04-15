@@ -28,7 +28,11 @@ int main(int argc, char *argv[])
 
 	//testing::copy_constructor_test(); 
 
-	testing::disp_curve_rib(); 
+	//testing::disp_curve_rib();
+
+	testing::disp_curve_wire();
+
+	//testing::material_RI_curve_test(); 
 
 	std::cout<<"Press enter to close console\n";
 	std::cin.get(); 
