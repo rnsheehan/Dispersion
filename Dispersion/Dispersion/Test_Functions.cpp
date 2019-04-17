@@ -118,8 +118,12 @@ void testing::eim_wire_wg()
 	// EIM starting with TE gives neff = 2.294 when ni is ncl
 	// EIM starting with TM gives neff = 1.625 when ni is averaged over ns and ncl
 	// EIM starting with TM gives neff = 1.594 when ni is ncl
-	W = 0.45; H = 0.22; 
-	nc = 3.45; ns = 1.45; ncl = 1.0; 
+	/*W = 0.45; H = 0.22; 
+	nc = 3.45; ns = 1.45; ncl = 1.0;*/
+
+	WL = 1.55; 
+	W = 1.0; H = 0.3;
+	nc = 2.00704; ns = 1.44428; ncl = 1.0;
 
 	wg_dims dim;
 
@@ -133,7 +137,13 @@ void testing::eim_wire_wg()
 
 	//wguide.set_params(polarisation, W, H, nc, ns, ncl, WL);
 
-	wguide.set_params(polarisation, dim, ri); 
+	wguide.set_params(TE, dim, ri); 
+
+	wguide.reduce_wg();
+
+	wguide.get_index(true);
+
+	wguide.set_params(TM, dim, ri);
 
 	wguide.reduce_wg();
 
@@ -247,6 +257,8 @@ void testing::eim_calc_with_materials(double WL)
 
 	W = 1.5; E = 0.3; T = 0.45; // neff = 3.265 for TM -> TE, neff = 3.269 for TE calc online
 	ncore = 3.38; nsub = 3.17; nclad = 1.0; // neff = 3.281 for TE -> TM, neff = 3.257 for TM calc online
+
+	W = 0.3; 
 
 	Air cladding;
 	//InP substrate; 

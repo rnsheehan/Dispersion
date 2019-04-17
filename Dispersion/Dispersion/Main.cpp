@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 
 	//testing::eim_rect_wg(); 
 
-	//testing::eim_wire_wg(); 
+	testing::eim_wire_wg(); 
 
 	//testing::eim_rib_wg();
 
@@ -24,13 +24,15 @@ int main(int argc, char *argv[])
 
 	//testing::eim_calc_with_materials(1.3);
 
+	//testing::eim_calc_with_materials(1.535);
+
 	//testing::eim_calc_with_materials(1.55);
 
 	//testing::copy_constructor_test(); 
 
 	//testing::disp_curve_rib();
 
-	testing::disp_curve_wire();
+	//testing::disp_curve_wire();
 
 	//testing::material_RI_curve_test(); 
 
