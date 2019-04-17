@@ -247,10 +247,9 @@ void dispersion::save_data_to_file(std::string &filename)
 wire_dispersion::wire_dispersion()
 {
 	// Default constructor
-	wire_file = empty_str; 
 }
 
-void wire_dispersion::compute_dispersion_data(bool polarisation, sweep &swp_obj, wg_dims &dim_obj, material *Ncore, material *Nsub, material *Nclad, bool loud)
+void wire_dispersion::compute_dispersion_data(bool polarisation, sweep &swp_obj, wg_dims &dim_obj, material *Ncore, material *Nsub, material *Nclad, std::string &filename, bool loud)
 {
 	// Compute the dispersion data based on the defined inputs
 	// test to ensure that input dim_obj is associated with a wire waveguide
@@ -264,9 +263,7 @@ void wire_dispersion::compute_dispersion_data(bool polarisation, sweep &swp_obj,
 
 			set_params(swp_obj, Ncore, Nsub, Nclad);				
 
-			wire_file = "Wire_WG_Dispersion_Data.txt"; 
-
-			compute_dispersion(polarisation, dim_obj, wire_file, loud); 
+			compute_dispersion(polarisation, dim_obj, filename, loud); 
 		}
 		else {
 			std::string reason;
@@ -286,10 +283,9 @@ void wire_dispersion::compute_dispersion_data(bool polarisation, sweep &swp_obj,
 rib_dispersion::rib_dispersion()
 {
 	// Default Constructor
-	rib_file = empty_str; 
 }
 
-void rib_dispersion::compute_dispersion_data(bool polarisation, sweep &swp_obj, wg_dims &dim_obj, material *Ncore, material *Nsub, material *Nclad, bool loud)
+void rib_dispersion::compute_dispersion_data(bool polarisation, sweep &swp_obj, wg_dims &dim_obj, material *Ncore, material *Nsub, material *Nclad, std::string &filename, bool loud)
 {
 	// Compute the dispersion data based on the defined inputs
 	// test to ensure that input dim_obj is associated with a wire waveguide
@@ -303,9 +299,7 @@ void rib_dispersion::compute_dispersion_data(bool polarisation, sweep &swp_obj, 
 
 			set_params(swp_obj, Ncore, Nsub, Nclad);
 
-			rib_file = "Rib_WG_Dispersion_Data.txt";
-
-			compute_dispersion(polarisation, dim_obj, rib_file, loud);
+			compute_dispersion(polarisation, dim_obj, filename, loud);
 		}
 		else {
 			std::string reason;

@@ -320,12 +320,17 @@ void testing::disp_curve_wire()
 	n_pts = 50; start = 1.5; stop = 1.6; 
 	WL.set_vals(n_pts, start, stop); 
 
-	W = 1; H = 0.3; 
+	W = 2; H = 0.3;    
+
 	wire_dims.set_rect_wire(W, H); 
 
 	wire_dispersion disp_calc; 
 
-	disp_calc.compute_dispersion_data(pol, WL, wire_dims, &ri_si, &ri_sio2, &ri_air); 
+	std::string filename; 
+
+	filename = "Wire_WG_Dispersion_W_" + template_funcs::toString(W, 2) + "_H_" + template_funcs::toString(H, 2) + dottxt; 
+
+	disp_calc.compute_dispersion_data(pol, WL, wire_dims, &ri_si, &ri_sio2, &ri_air, filename); 
 }
 
 void testing::disp_curve_rib()
@@ -353,7 +358,9 @@ void testing::disp_curve_rib()
 
 	rib_dispersion disp_calc;
 
-	disp_calc.compute_dispersion_data(pol, WL, rib_dims, &ri_si, &ri_sio2, &ri_air, true);
+	std::string filename = "Rib_WG_Dispersion.txt"; 
+
+	disp_calc.compute_dispersion_data(pol, WL, rib_dims, &ri_si, &ri_sio2, &ri_air, filename);
 }
 
 void testing::material_RI_curve_test()
