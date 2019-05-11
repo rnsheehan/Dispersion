@@ -67,7 +67,6 @@ void vecut::read_into_vector(std::string &filename, std::vector<double> &data, i
 {
 	// read a single column of data from a file into a vector
 	// It is assumed that data is empty when the values are being read in
-	// http://www.smbc-comics.com/comic/art-2
 	// R. Sheehan 11 - 9 - 2017
 
 	try {

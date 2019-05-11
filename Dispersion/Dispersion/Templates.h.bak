@@ -6,12 +6,6 @@
 
 namespace template_funcs{
 	
-	template <class T> bool LimitSafe(T a)
-	{
-		// check whether a given value is within acceptable numeric limits
-		return (a < std::numeric_limits<T>::max() && a > std::numeric_limits<T>::min() ) ? true : false; 
-	}
-
 	template <class T> T Signum(T a)
 	{
 		// The sign operator

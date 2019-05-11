@@ -8,6 +8,7 @@ std::string useful_funcs::TheTime()
 	// This is just a neater way of ensuring that the time can be correctly and easily accessed
 	// without being hassled about whether or not you've remembered to use non-deprecated versions 
 	// of certain functions
+	// http://www.smbc-comics.com/comic/straw-men
 	// R. Sheehan 4 - 7 - 2011
 	
 	const int N=30;	
