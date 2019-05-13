@@ -102,6 +102,8 @@ public:
 
 	double neff_value(); // return the effective index of the fundamental mode
 
+	double coupling_coefficient(double &separ); // estimate the coupling coefficient between this waveguide and a copy of itself
+
 	// setters
 	/*inline void set_W(double &val) { width = val;  }
 	inline void set_H(double &val) { height = val; }
