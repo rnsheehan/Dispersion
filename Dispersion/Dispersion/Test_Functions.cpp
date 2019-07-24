@@ -317,7 +317,7 @@ void testing::disp_curve_wire()
 	// Compute the dispersion curve for a wire waveguide object
 	// R. Sheehan 7 - 3 - 2019
 
-	bool pol = TM; 
+	bool pol = TE; 
 
 	int n_pts; 
 	double start, stop, W, H; 
@@ -332,7 +332,7 @@ void testing::disp_curve_wire()
 	n_pts = 50; start = 1.5; stop = 1.6; 
 	WL.set_vals(n_pts, start, stop); 
 
-	W = 2; H = 0.3;    
+	W = 1.0; H = 0.3;    
 
 	wire_dims.set_rect_wire(W, H); 
 
@@ -340,7 +340,9 @@ void testing::disp_curve_wire()
 
 	std::string filename; 
 
-	filename = "Wire_WG_Dispersion_W_" + template_funcs::toString(W, 2) + "_H_" + template_funcs::toString(H, 2) + dottxt; 
+	std::string pol_str = pol == TE ? "_TE" : "_TM"; 
+
+	filename = "Wire_WG_Dispersion_W_" + template_funcs::toString(W, 2) + "_H_" + template_funcs::toString(H, 2) + pol_str + dottxt;
 
 	disp_calc.compute_dispersion_data(pol, WL, wire_dims, &ri_si, &ri_sio2, &ri_air, filename); 
 }
