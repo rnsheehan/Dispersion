@@ -61,7 +61,6 @@ public:
 	rib_dispersion();
 
 	void compute_dispersion_data(bool polarisation, sweep &swp_obj, wg_dims &dim_obj, material *Ncore, material *Nsub, material *Nclad, std::string &filename, bool loud = false);
-
 };
 
 #endif

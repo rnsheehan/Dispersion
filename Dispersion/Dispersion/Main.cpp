@@ -30,9 +30,9 @@ int main(int argc, char *argv[])
 
 	//testing::copy_constructor_test(); 
 
-	//testing::disp_curve_rib();
+	testing::disp_curve_rib();
 
-	testing::disp_curve_wire();
+	//testing::disp_curve_wire();
 
 	//testing::material_RI_curve_test(); 
 
